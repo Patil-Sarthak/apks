@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>APK Collection | Sarthak Patil</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #0f1c2e, #1b2c40);
+      color: #e8efff;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+
+    header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      color: #d7e3ff;
+    }
+
+    header p {
+      font-size: 18px;
+      color: #b9c7e6;
+    }
+
+    main {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .apk-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 25px 20px;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      width: 320px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    .apk-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .apk-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #c7ddff;
+    }
+
+    .apk-desc {
+      font-size: 14px;
+      color: #9bb7d9;
+      margin-bottom: 15px;
+      line-height: 1.4;
+    }
+
+    .apk-links a {
+      display: inline-block;
+      text-decoration: none;
+      background: #4fa3ff;
+      color: #0f1c2e;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      margin-right: 10px;
+      transition: 0.3s;
+    }
+
+    .apk-links a:hover {
+      background: #368eed;
+    }
+
+    /* Modal for MD view */
+    .modal {
+      display: none;
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background: rgba(0,0,0,0.85);
+      overflow: auto;
+      z-index: 9999;
+      padding: 40px;
+    }
+
+    .modal-content {
+      background: #1b2c40;
+      padding: 25px;
+      border-radius: 15px;
+      max-width: 800px;
+      margin: auto;
+      color: #e8efff;
+    }
+
+    .close-btn {
+      float: right;
+      font-size: 24px;
+      cursor: pointer;
+      color: #ff7b72;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      color: #9bb7d9;
+      font-size: 14px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📱 My APK Collection</h1>
+    <p>Click an APK to view details or download directly.</p>
+  </header>
+
+  <main id="apk-list">
+    <!-- APK cards will be inserted here -->
+  </main>
+
+  <footer>
+    &copy; 2025 Sarthak Patil | <a href="https://github.com/Patil-Sarthak" style="color:#c7ddff;">GitHub</a>
+  </footer>
+
+  <!-- Modal for MD display -->
+  <div class="modal" id="mdModal">
+    <div class="modal-content" id="mdContent">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <div id="mdInner"></div>
+    </div>
+  </div>
+
+  <script>
+    const apks = [
+      {
+        title: "Elisiya",
+        mdRaw: "https://raw.githubusercontent.com/Patil-Sarthak/elisiya/main/Elisiya.md",
+        apk: "https://github.com/Patil-Sarthak/elisiya/releases/download/v1.0/Elisiya.apk",
+        desc: "The main Elisiya APK - version 1.0 release."
+      },
+      {
+        title: "AnotherApp",
+        mdRaw: "https://raw.githubusercontent.com/Patil-Sarthak/apks/main/AnotherApp.md",
+        apk: "https://github.com/Patil-Sarthak/apks/releases/download/v1.0/AnotherApp.apk",
+        desc: "Another APK example description."
+      }
+    ];
+
+    const listContainer = document.getElementById("apk-list");
+    const modal = document.getElementById("mdModal");
+    const mdInner = document.getElementById("mdInner");
+    const closeModal = document.getElementById("closeModal");
+
+    apks.forEach(apk => {
+      const card = document.createElement("div");
+      card.classList.add("apk-card");
+      card.innerHTML = `
+        <div class="apk-title">${apk.title}</div>
+        <div class="apk-desc">${apk.desc}</div>
+        <div class="apk-links">
+          <a href="${apk.apk}" target="_blank">⬇ Download APK</a>
+        </div>
+      `;
+
+      card.addEventListener("click", async () => {
+        // Fetch raw markdown
+        try {
+          const response = await fetch(apk.mdRaw);
+          let mdText = await response.text();
+          mdInner.innerHTML = marked.parse(mdText);
+          modal.style.display = "block";
+        } catch(err){
+          mdInner.innerHTML = "<p>Failed to load markdown file.</p>";
+          modal.style.display = "block";
+        }
+      });
+
+      listContainer.appendChild(card);
+    });
+
+    closeModal.onclick = () => modal.style.display = "none";
+    window.onclick = (e) => { if(e.target == modal) modal.style.display="none"; }
+  </script>
+
+</body>
+</html>
